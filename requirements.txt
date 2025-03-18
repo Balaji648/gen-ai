@@ -1,0 +1,9 @@
+Flask
+requests
+Pillow
+gTTS
+pylint
+nltk
+PyMuPDF
+gunicorn
+flask-cors
