@@ -54,6 +54,7 @@ def text_to_image():
     url = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
     headers = {"Authorization": f"Bearer {hf_api_key}"}
     payload = {"inputs": prompt}
+    tmp_path = None  # Initialize tmp_path
     try:
         response = requests.post(url, headers=headers, json=payload)
         if response.status_code == 200:
@@ -68,7 +69,7 @@ def text_to_image():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
-        if 'tmp_path' in locals() and os.path.exists(tmp_path):
+        if tmp_path and os.path.exists(tmp_path):
             os.unlink(tmp_path)
 
 @app.route('/api/download-image')
@@ -83,6 +84,7 @@ def download_image():
 def text_to_audio():
     text = request.json.get('text', 'Hello, this is a test.')
     lang = request.json.get('lang', 'en')
+    tmp_path = None  # Initialize tmp_path to None
     try:
         with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
             tts = gTTS(text=text, lang=lang, slow=False)
@@ -93,9 +95,9 @@ def text_to_audio():
             "status": "success"
         })
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500  # Fixed syntax: removed extra ')'
     finally:
-        if 'tmp_path' in locals() and os.path.exists(tmp_path):
+        if tmp_path and os.path.exists(tmp_path):  # Check if tmp_path is not None
             os.unlink(tmp_path)
 
 @app.route('/api/download-audio')
@@ -168,7 +170,7 @@ def ats_score():
         score = min(len(common) / len(job_words) * 100, 100)
         return jsonify({"score": f"{score:.2f}%", "matches": list(common)})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500)
+        return jsonify({"error": str(e)}), 500
 
 # Development server (for local testing only, Gunicorn will handle production)
 if __name__ == '__main__':
