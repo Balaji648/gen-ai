@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEN IQ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>GEN IQ</h1>
+    <div class="tabs">
+        <button class="tab-button" onclick="openTab('text-to-image')">Text-to-Image</button>
+        <button class="tab-button" onclick="openTab('text-to-audio')">Text-to-Audio</button>
+        <button class="tab-button" onclick="openTab('summarization')">Summarization</button>
+        <button class="tab-button" onclick="openTab('code-debugger')">Code Debugger</button>
+        <button class="tab-button" onclick="openTab('ats-score')">ATS Score Checker</button>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="text-to-image" class="tab-content">
+        <h2>Text-to-Image Generation</h2>
+        <input type="text" id="image-prompt" placeholder="A futuristic city">
+        <button onclick="generateImage()">Generate</button>
+        <div id="image-result"></div>
+    </div>
+
+    <div id="text-to-audio" class="tab-content">
+        <h2>Text-to-Audio Conversion</h2>
+        <textarea id="audio-text" placeholder="Hello, this is a test."></textarea>
+        <select id="audio-lang">
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+        </select>
+        <button onclick="generateAudio()">Convert</button>
+        <div id="audio-result"></div>
+    </div>
+
+    <div id="summarization" class="tab-content">
+        <h2>AI-Powered Summarization</h2>
+        <textarea id="summary-text" placeholder="Paste your text here..."></textarea>
+        <label>Number of sentences: <input type="number" id="summary-sentences" min="1" max="5" value="2"></label>
+        <button onclick="summarizeText()">Summarize</button>
+        <div id="summary-result"></div>
+    </div>
+
+    <div id="code-debugger" class="tab-content">
+        <h2>Code Debugger & Explainer</h2>
+        <textarea id="code-input" placeholder="def example():\n    print(undefined_variable)"></textarea>
+        <button onclick="debugCode()">Debug</button>
+        <div id="code-result"></div>
+    </div>
+
+    <div id="ats-score" class="tab-content">
+        <h2>ATS Score Checker</h2>
+        <input type="file" id="resume-upload" accept=".pdf">
+        <textarea id="job-desc" placeholder="Enter job description..."></textarea>
+        <button onclick="checkAtsScore()">Check Score</button>
+        <div id="ats-result"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
