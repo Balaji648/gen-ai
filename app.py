@@ -17,19 +17,8 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Ensure NLTK data is downloaded at startup
-def download_nltk_data():
-    try:
-        nltk.data.find('tokenizers/punkt_tab')
-        nltk.data.find('corpora/stopwords')
-    except LookupError:
-        download_dir = '/opt/render/nltk_data' if os.path.exists('/opt/render') else './nltk_data'
-        os.makedirs(download_dir, exist_ok=True)
-        nltk.download('punkt_tab', download_dir=download_dir)
-        nltk.download('stopwords', download_dir=download_dir)
-        nltk.data.path.append(download_dir)
-
-download_nltk_data()
+# Set NLTK data path to the pre-downloaded folder in the project root
+nltk.data.path.append(os.path.join(os.path.dirname(__file__), 'nltk_data'))
 
 # PyMuPDF check
 try:
@@ -40,7 +29,7 @@ except ImportError:
 # API Key (Hugging Face) - Use environment variable
 hf_api_key = os.getenv("HF_API_KEY")
 
-# Home page route (Updated to use index.html)
+# Home page route
 @app.route('/')
 def home():
     return render_template('index.html')
