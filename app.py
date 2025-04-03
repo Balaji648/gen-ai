@@ -12,10 +12,10 @@ import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from collections import Counter
-from flask_cors import CORS  # Added for CORS support
+from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend-backend communication
+CORS(app)
 
 # Ensure NLTK data is downloaded at startup
 def download_nltk_data():
@@ -40,12 +40,33 @@ except ImportError:
 # API Key (Hugging Face) - Use environment variable
 hf_api_key = os.getenv("HF_API_KEY")
 
-# Home route - serves the HTML frontend
+# Home page route (Updated to use index.html)
 @app.route('/')
-def index():
+def home():
     return render_template('index.html')
 
-# 1. Text-to-Image
+# Individual model page routes
+@app.route('/text-to-image')
+def text_to_image_page():
+    return render_template('text_to_image.html')
+
+@app.route('/text-to-audio')
+def text_to_audio_page():
+    return render_template('text_to_audio.html')
+
+@app.route('/summarization')
+def summarization_page():
+    return render_template('summarization.html')
+
+@app.route('/code-debugger')
+def code_debugger_page():
+    return render_template('code_debugger.html')
+
+@app.route('/ats-score')
+def ats_score_page():
+    return render_template('ats_score.html')
+
+# API Endpoints
 @app.route('/api/text-to-image', methods=['POST'])
 def text_to_image():
     if not hf_api_key:
@@ -54,7 +75,7 @@ def text_to_image():
     url = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
     headers = {"Authorization": f"Bearer {hf_api_key}"}
     payload = {"inputs": prompt}
-    tmp_path = None  # Initialize tmp_path
+    tmp_path = None
     try:
         response = requests.post(url, headers=headers, json=payload)
         if response.status_code == 200:
@@ -79,12 +100,11 @@ def download_image():
         return send_file(tmp_path, mimetype='image/png', as_attachment=True, download_name='generated_image.png')
     return jsonify({"error": "File not found"}), 404
 
-# 2. Text-to-Audio
 @app.route('/api/text-to-audio', methods=['POST'])
 def text_to_audio():
     text = request.json.get('text', 'Hello, this is a test.')
     lang = request.json.get('lang', 'en')
-    tmp_path = None  # Initialize tmp_path to None
+    tmp_path = None
     try:
         with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
             tts = gTTS(text=text, lang=lang, slow=False)
@@ -95,9 +115,9 @@ def text_to_audio():
             "status": "success"
         })
     except Exception as e:
-        return jsonify({"error": str(e)}), 500  # Fixed syntax: removed extra ')'
+        return jsonify({"error": str(e)}), 500
     finally:
-        if tmp_path and os.path.exists(tmp_path):  # Check if tmp_path is not None
+        if tmp_path and os.path.exists(tmp_path):
             os.unlink(tmp_path)
 
 @app.route('/api/download-audio')
@@ -107,7 +127,6 @@ def download_audio():
         return send_file(tmp_path, mimetype='audio/mp3', as_attachment=True, download_name='output.mp3')
     return jsonify({"error": "File not found"}), 404
 
-# 3. Summarization
 @app.route('/api/summarize', methods=['POST'])
 def summarize():
     text = request.json.get('text', '')
@@ -133,7 +152,6 @@ def summarize():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# 4. Code Debugger
 @app.route('/api/debug', methods=['POST'])
 def debug_code():
     code = request.json.get('code', '')
@@ -152,7 +170,6 @@ def debug_code():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# 5. ATS Score Checker
 @app.route('/api/ats-score', methods=['POST'])
 def ats_score():
     if not fitz:
@@ -172,6 +189,5 @@ def ats_score():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Development server (for local testing only, Gunicorn will handle production)
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv("PORT", 5000)), debug=True)
