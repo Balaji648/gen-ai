@@ -1,19 +1,3 @@
-// Function to open specific tab
-function openTab(tabName) {
-    const tabs = document.getElementsByClassName('tab-content');
-    for (let i = 0; i < tabs.length; i++) {
-        tabs[i].style.display = i === 0 ? 'block' : 'none'; // Default to first tab
-    }
-    document.getElementById(tabName).style.display = 'block';
-    const buttons = document.getElementsByClassName('tab-button');
-    for (let button of buttons) {
-        button.style.backgroundColor = '';
-    }
-    event.target.style.backgroundColor = '#ddd';
-    // Close burger menu on mobile after clicking a tab
-    document.querySelector('.nav-links').classList.remove('active');
-}
-
 // Toggle burger menu
 function toggleMenu() {
     const navLinks = document.querySelector('.nav-links');
@@ -30,11 +14,6 @@ function toggleTheme() {
         themeButton.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
     }
 }
-
-// Initialize first tab on load
-window.onload = function() {
-    openTab('text-to-image');
-};
 
 // Show loading spinner
 function showSpinner(tab) {
