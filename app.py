@@ -1,14 +1,13 @@
 from flask import Flask, render_template, request, jsonify, send_file
 import requests
 from PIL import Image
-from io import BytesIO
+from io import BytesIO, StringIO
 import tempfile
 import os
 import logging
 from gtts import gTTS
 from pylint.lint import Run
 from pylint.reporters.text import TextReporter
-from io import StringIO
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
@@ -27,7 +26,7 @@ nltk.data.path.append(os.path.join(os.path.dirname(__file__), 'nltk_data'))
 
 # Verify NLTK data (log if missing)
 try:
-    nltk.data.find('tokenizers/punkt_tab')
+    nltk.data.find('tokenizers/punkt')
     nltk.data.find('corpora/stopwords')
     logger.info("NLTK data loaded successfully")
 except LookupError as e:
@@ -82,7 +81,7 @@ def text_to_image():
     headers = {"Authorization": f"Bearer {hf_api_key}"}
     payload = {"inputs": prompt}
     try:
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
+        response = requests.post(url, headers=headers, json=payload, timeout=60)
         response.raise_for_status()
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
             tmp.write(response.content)
@@ -101,7 +100,7 @@ def download_image():
     tmp_path = request.args.get('path')
     if os.path.exists(tmp_path):
         response = send_file(tmp_path, mimetype='image/png', as_attachment=True, download_name='generated_image.png')
-        os.unlink(tmp_path)  # Clean up after sending
+        os.unlink(tmp_path)
         return response
     logger.error(f"Download-image: File not found at {tmp_path}")
     return jsonify({"error": "File not found"}), 404
@@ -126,7 +125,7 @@ def download_audio():
     tmp_path = request.args.get('path')
     if os.path.exists(tmp_path):
         response = send_file(tmp_path, mimetype='audio/mp3', as_attachment=True, download_name='output.mp3')
-        os.unlink(tmp_path)  # Clean up after sending
+        os.unlink(tmp_path)
         return response
     logger.error(f"Download-audio: File not found at {tmp_path}")
     return jsonify({"error": "File not found"}), 404
@@ -150,8 +149,9 @@ def summarize():
         for i, sent in enumerate(sentences):
             score = sum(word_freq[w.lower()] for w in word_tokenize(sent) if w.isalnum() and w.lower() in word_freq)
             sentence_scores[i] = score / (len(word_tokenize(sent)) + 1)
-        top_sentences = sorted(sorted(sentence_scores.items(), key=lambda x: x[0])[:summary_sentences], key=lambda x: x[1], reverse=True)
-        summary_sentences_list = [sentences[i] for i, _ in top_sentences]
+        top_sentences = sorted(sentence_scores.items(), key=lambda x: x[1], reverse=True)[:summary_sentences]
+        top_sentences_sorted = sorted(top_sentences, key=lambda x: x[0])
+        summary_sentences_list = [sentences[i] for i, _ in top_sentences_sorted]
         logger.info("Summarization: Successfully generated summary")
         return jsonify({"summary": summary_sentences_list})
     except Exception as e:
