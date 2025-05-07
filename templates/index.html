@@ -3,84 +3,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEN IQ - Home</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>GEN IQ</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1F2525, #0A1D37);
+            color: #ffffff;
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        #app {
+            position: relative;
+            z-index: 1;
+        }
+        input, textarea, select {
+            background-color: rgba(50, 50, 50, 0.9);
+            color: #ffffff;
+            border: 1px solid #ffffff;
+            border-radius: 8px;
+            padding: 8px;
+            margin: 10px 0;
+            width: 90%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+        button {
+            background: linear-gradient(45deg, #0F52BA, #2ECC71);
+            color: #ffffff;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.7);
+            display: block;
+            margin: 10px auto;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            width: 90%;
+            max-width: 200px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(15, 82, 186, 0.9);
+        }
+        button:disabled {
+            background: linear-gradient(45deg, #666666, #999999);
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        h2, h3 {
+            color: #D3D3D3;
+            text-align: center;
+        }
+        .background-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.8), transparent);
+            border-radius: 50%;
+            width: 6px;
+            height: 6px;
+            animation: float 8s infinite ease-in-out;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+        }
+        .particle:nth-child(1) { left: 5%; animation-duration: 10s; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 15%; animation-duration: 12s; animation-delay: 1s; }
+        .particle:nth-child(3) { left: 25%; animation-duration: 9s; animation-delay: 2s; }
+        .particle:nth-child(4) { left: 35%; animation-duration: 11s; animation-delay: 3s; }
+        .particle:nth-child(5) { left: 45%; animation-duration: 13s; animation-delay: 0.5s; }
+        .particle:nth-child(6) { left: 55%; animation-duration: 10s; animation-delay: 1.5s; }
+        .particle:nth-child(7) { left: 65%; animation-duration: 14s; animation-delay: 2.5s; }
+        .particle:nth-child(8) { left: 75%; animation-duration: 8s; animation-delay: 3.5s; }
+        .particle:nth-child(9) { left: 85%; animation-duration: 12s; animation-delay: 4s; }
+        .particle:nth-child(10) { left: 95%; animation-duration: 11s; animation-delay: 0.2s; }
+        .unique-title {
+            font-size: 7rem;
+            font-weight: 900;
+            text-align: center;
+            background: linear-gradient(45deg, #FFD700, #C0C0C0, #FFD700);
+            background-size: 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px #FFD700, 0 0 30px #C0C0C0;
+            margin: 30px 0;
+            animation: neon-glow 4s ease-in-out infinite;
+        }
+        @keyframes neon-glow {
+            0% { background-position: 0%; text-shadow: 0 0 20px #FFD700, 0 0 30px #C0C0C0; }
+            50% { background-position: 100%; text-shadow: 0 0 30px #FFD700, 0 0 40px #C0C0C0; }
+            100% { background-position: 0%; text-shadow: 0 0 20px #FFD700, 0 0 30px #C0C0C0; }
+        }
+        .tool-card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            width: 90%;
+            max-width: 1300px;
+            margin: 30px auto;
+            perspective: 1000px;
+        }
+        .tool-card {
+            background: rgba(20, 20, 30, 0.95);
+            color: #ffffff;
+            padding: 25px;
+            border: 2px solid transparent;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.4s, box-shadow 0.4s, border 0.4s;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 0 15px rgba(15, 82, 186, 0.5);
+            transform: rotateY(0deg);
+        }
+        .tool-card:hover {
+            transform: rotateY(5deg) translateY(-10px);
+            box-shadow: 0 0 30px rgba(46, 204, 113, 0.7);
+            border: 2px solid #0F52BA;
+        }
+        .tool-card h3 {
+            margin: 15px 0;
+            font-size: 1.7rem;
+            color: #D3D3D3;
+            text-shadow: 0 0 5px #D3D3D3;
+        }
+        .tool-card p {
+            font-size: 1rem;
+            color: #e0e0e0;
+            margin-bottom: 25px;
+        }
+        .tool-card .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        .back-button-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        .tool-section {
+            display: none;
+            padding: 20px;
+            text-align: center;
+        }
+        #home {
+            display: block;
+        }
+        .error, .success {
+            color: #ff0000;
+            margin: 10px 0;
+        }
+        .success {
+            color: #00ff00;
+        }
+        @media (max-width: 600px) {
+            .unique-title {
+                font-size: 4.5rem;
+            }
+            .tool-card-container {
+                grid-template-columns: 1fr;
+            }
+            button {
+                width: 95%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo">GEN IQ</div>
-        <nav class="navbar">
-            <div class="burger" onclick="toggleMenu()">
-                <i class="fas fa-bars"></i>
+    <div id="app">
+        <!-- Homepage -->
+        <div id="home" class="section">
+            <h1 class="unique-title">GEN IQ</h1>
+            <div class="background-particles">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
             </div>
-            <ul class="nav-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/text-to-image">Text-to-Image</a></li>
-                <li><a href="/text-to-audio">Text-to-Audio</a></li>
-                <li><a href="/summarization">Summarization</a></li>
-                <li><a href="/code-debugger">Code Debugger</a></li>
-                <li><a href="/ats-score">ATS Score</a></li>
-            </ul>
-        </nav>
-        <div class="theme-toggle">
-            <button onclick="toggleTheme()"><i class="fas fa-moon"></i> Dark Mode</button>
+            <div class="tool-card-container">
+                <div class="tool-card">
+                    <h3>🖼️ Text-to-Image</h3>
+                    <p>Generate stunning visuals from text prompts using AI.</p>
+                    <div class="button-container">
+                        <button onclick="navigate('text-to-image')">Text-to-Image</button>
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <h3>🎵 Text-to-Audio</h3>
+                    <p>Transform text into speech with multilingual support.</p>
+                    <div class="button-container">
+                        <button onclick="navigate('text-to-audio')">Text-to-Audio</button>
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <h3>📝 Summarization</h3>
+                    <p>Condense lengthy texts into concise summaries.</p>
+                    <div class="button-container">
+                        <button onclick="navigate('summarization')">Summarization</button>
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <h3>💻 Code Debugger</h3>
+                    <p>Analyze and fix Python code with ease.</p>
+                    <div class="button-container">
+                        <button onclick="navigate('code-debugger')">Code Debugger</button>
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <h3>📄 ATS Score Checker</h3>
+                    <p>Optimize your resume for job applications.</p>
+                    <div class="button-container">
+                        <button onclick="navigate('ats-score-checker')">ATS Score Checker</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </header>
 
-    <!-- Main Content -->
-    <main>
-        <section class="hero">
-            <h1>Welcome to GEN IQ</h1>
-            <p>Explore our suite of AI-powered tools to enhance your productivity and creativity.</p>
-        </section>
-        <section class="cards">
-            <div class="card">
-                <i class="fas fa-image"></i>
-                <h2>Text-to-Image</h2>
-                <p>Transform your text prompts into stunning images using advanced AI models.</p>
-                <a href="/text-to-image" class="btn">Try Now</a>
+        <!-- Text-to-Image Section -->
+        <div id="text-to-image" class="tool-section">
+            <div class="back-button-container">
+                <button onclick="navigate('home')">Back to Tools</button>
             </div>
-            <div class="card">
-                <i class="fas fa-volume-up"></i>
-                <h2>Text-to-Audio</h2>
-                <p>Convert text into natural-sounding audio in multiple languages.</p>
-                <a href="/text-to-audio" class="btn">Try Now</a>
-            </div>
-            <div class="card">
-                <i class="fas fa-file-alt"></i>
-                <h2>Summarization</h2>
-                <p>Summarize lengthy texts into concise summaries with AI.</p>
-                <a href="/summarization" class="btn">Try Now</a>
-            </div>
-            <div class="card">
-                <i class="fas fa-code"></i>
-                <h2>Code Debugger</h2>
-                <p>Debug and explain your code with detailed insights.</p>
-                <a href="/code-debugger" class="btn">Try Now</a>
-            </div>
-            <div class="card">
-                <i class="fas fa-briefcase"></i>
-                <h2>ATS Score Checker</h2>
-                <p>Optimize your resume by checking its ATS compatibility.</p>
-                <a href="/ats-score" class="btn">Try Now</a>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-links">
-                <a href="#">About</a>
-                <a href="#">Contact</a>
-                <a href="#">Privacy Policy</a>
-            </div>
-            <p>© 2025 GEN IQ. All rights reserved.</p>
+            <h2>Text-to-Image Generation</h2>
+            <input type="text" id="tti-prompt" placeholder="Enter a prompt: A futuristic city" value="A futuristic city">
+            <button onclick="generateImage()">Generate Image</button>
+            <div id="tti-result"></div>
         </div>
-    </footer>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+        <!-- Text-to-Audio Section -->
+        <div id="text-to-audio" class="tool-section">
+            <div class="back-button-container">
+                <button onclick="navigate('home')">Back to Tools</button>
+            </div>
+            <h2>Text-to-Audio Conversion</h2>
+            <textarea id="tta-text" placeholder="Enter text: Hello, this is a test." rows="5">Hello, this is a test.</textarea>
+            <select id="tta-lang">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+            </select>
+            <button onclick="convertToAudio()">Convert to Audio</button>
+            <div id="tta-result"></div>
+        </div>
+
+        <!-- Summarization Section -->
+        <div id="summarization" class="tool-section">
+            <div class="back-button-container">
+                <button onclick="navigate('home')">Back to Tools</button>
+            </div>
+            <h2>AI-Powered Summarization</h2>
+            <textarea id="sum-text" placeholder="Paste your text here..." rows="10"></textarea>
+            <div id="sum-stats"></div>
+            <label>Number of sentences in summary: <input type="number" id="sum-sentences" min="1" max="5" value="2"></label>
+            <button onclick="summarizeText()">Summarize</button>
+            <div id="sum-result"></div>
+        </div>
+
+        <!-- Code Debugger Section -->
+        <div id="code-debugger" class="tool-section">
+            <div class="back-button-container">
+                <button onclick="navigate('home')">Back to Tools</button>
+            </div>
+            <h2>Code Debugger & Explainer</h2>
+            <textarea id="code-text" placeholder="def example():\n    print(undefined_variable)" rows="10">def example():\n    print(undefined_variable)</textarea>
+            <button onclick="debugCode()">Debug</button>
+            <div id="code-result"></div>
+        </div>
+
+        <!-- ATS Score Checker Section -->
+        <div id="ats-score-checker" class="tool-section">
+            <div class="back-button-container">
+                <button onclick="navigate('home')">Back to Tools</button>
+            </div>
+            <h2>ATS Score Checker</h2>
+            <textarea id="ats-resume" placeholder="Paste your resume text here..." rows="10"></textarea>
+            <textarea id="ats-job-desc" placeholder="Enter job description here..." rows="10"></textarea>
+            <button onclick="checkATSScore()">Check Score</button>
+            <div id="ats-result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation between sections
+        function navigate(sectionId) {
+            document.querySelectorAll('.section, .tool-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        // Single-click enforcement
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                button.disabled = true;
+                setTimeout(() => {
+                    button.disabled = false;
+                }, 1000);
+            });
+        });
+
+        // Text-to-Image
+        async function generateImage() {
+            const prompt = document.getElementById('tti-prompt').value;
+            const resultDiv = document.getElementById('tti-result');
+            resultDiv.innerHTML = '<p>Generating...</p>';
+            try {
+                const response = await fetch('/generate-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'prompt': prompt })
+                });
+                const data = await response.json();
+                if (data.image) {
+                    resultDiv.innerHTML = `<img src="${data.image}" alt="Generated Image" style="max-width: 100%;">`;
+                } else {
+                    resultDiv.innerHTML = `<p class="error">${data.error}</p>`;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<p class="error">Error: ${e.message}</p>`;
+            }
+        }
+
+        // Text-to-Audio using Web Speech API
+        function convertToAudio() {
+            const text = document.getElementById('tta-text').value;
+            const lang = document.getElementById('tta-lang').value;
+            const resultDiv = document.getElementById('tta-result');
+            if (!text) {
+                resultDiv.innerHTML = '<p class="error">Please enter some text.</p>';
+                return;
+            }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            window.speechSynthesis.speak(utterance);
+            resultDiv.innerHTML = '<p class="success">Playing audio...</p>';
+        }
+
+        // Summarization
+        async function summarizeText() {
+            const text = document.getElementById('sum-text').value;
+            const numSentences = document.getElementById('sum-sentences').value;
+            const resultDiv = document.getElementById('sum-result');
+            const statsDiv = document.getElementById('sum-stats');
+
+            try {
+                const response = await fetch('/summarize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'text': text, 'num_sentences': numSentences })
+                });
+                const data = await response.json();
+                if (data.error) {
+                    resultDiv.innerHTML = `<p class="error">${data.error}</p>`;
+                    statsDiv.innerHTML = `Sentence count: ${data.stats.sentence_count} | Word count: ${data.stats.word_count}`;
+                } else {
+                    statsDiv.innerHTML = `Sentence count: ${data.stats.sentence_count} | Word count: ${data.stats.word_count}`;
+                    resultDiv.innerHTML = '<strong>Summary:</strong><br>' + data.summary.map((s, i) => `${i + 1}. ${s}`).join('<br>');
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<p class="error">Error: ${e.message}</p>`;
+            }
+        }
+
+        // Code Debugger
+        async function debugCode() {
+            const code = document.getElementById('code-text').value;
+            const resultDiv = document.getElementById('code-result');
+
+            try {
+                const response = await fetch('/debug-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'code': code })
+                });
+                const data = await response.json();
+                if (data.issues) {
+                    resultDiv.innerHTML = '<p>Issues found:</p><ul>' + data.issues.map(issue => `<li>${issue}</li>`).join('') + '</ul>';
+                } else {
+                    resultDiv.innerHTML = `<p class="success">${data.message}</p>`;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<p class="error">Error: ${e.message}</p>`;
+            }
+        }
+
+        // ATS Score Checker
+        async function checkATSScore() {
+            const resume = document.getElementById('ats-resume').value;
+            const jobDesc = document.getElementById('ats-job-desc').value;
+            const resultDiv = document.getElementById('ats-result');
+
+            try {
+                const response = await fetch('/check-ats-score', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'resume': resume, 'job_desc': jobDesc })
+                });
+                const data = await response.json();
+                if (data.error) {
+                    resultDiv.innerHTML = `<p class="error">${data.error}</p>`;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p>ATS Score: ${data.score}%</p>
+                        <p>Matches: ${data.matches.join(', ')}</p>
+                    `;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<p class="error">Error: ${e.message}</p>`;
+            }
+        }
+    </script>
 </body>
 </html>
