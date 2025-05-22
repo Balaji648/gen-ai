@@ -495,15 +495,9 @@
             </div>
             <h2>ATS Score Checker</h2>
             <div class="file-upload-container">
-                <label for="ats-resume-file">Upload Resume (PDF or Text):</label>
-                <input type="file" id="ats-resume-file" accept=".pdf,.txt">
+                <label for="ats-file">Upload Resume and Job Description (PDF or Text):</label>
+                <input type="file" id="ats-file" accept=".pdf,.txt" multiple>
             </div>
-            <textarea id="ats-resume" placeholder="Or paste your resume text here..." rows="10"></textarea>
-            <div class="file-upload-container">
-                <label for="ats-job-desc-file">Upload Job Description (PDF or Text):</label>
-                <input type="file" id="ats-job-desc-file" accept=".pdf,.txt">
-            </div>
-            <textarea id="ats-job-desc" placeholder="Or enter job description here..." rows="10"></textarea>
             <button onclick="checkATSScore()">Check Score</button>
             <div id="ats-result"></div>
         </div>
@@ -511,7 +505,7 @@
 
     <footer>
         <div class="footer-container">
-            <p>&copy; 2025 GEN IQ. All rights reserved.</p>
+            <p>© 2025 GEN IQ. All rights reserved.</p>
             <div class="footer-links">
                 <a href="#">Privacy Policy</a>
                 <a href="#">Terms of Service</a>
@@ -553,18 +547,20 @@
         }
 
         // Handle file uploads for ATS
-        document.getElementById('ats-resume-file').addEventListener('change', function(e) {
+        document.getElementById('ats-file').addEventListener('change', function(e) {
             if (e.target.files.length > 0) {
-                readFile(e.target.files[0], function(text) {
-                    document.getElementById('ats-resume').value = text;
-                });
-            }
-        });
-
-        document.getElementById('ats-job-desc-file').addEventListener('change', function(e) {
-            if (e.target.files.length > 0) {
-                readFile(e.target.files[0], function(text) {
-                    document.getElementById('ats-job-desc').value = text;
+                const files = e.target.files;
+                let resumeText = '';
+                let jobDescText = '';
+                
+                // Assuming first file is resume and second (if present) is job description
+                readFile(files[0], function(text) {
+                    resumeText = text;
+                    if (files.length > 1) {
+                        readFile(files[1], function(text) {
+                            jobDescText = text;
+                        });
+                    }
                 });
             }
         });
@@ -656,20 +652,40 @@
 
         // ATS Score Checker
         async function checkATSScore() {
-            const resume = document.getElementById('ats-resume').value;
-            const jobDesc = document.getElementById('ats-job-desc').value;
             const resultDiv = document.getElementById('ats-result');
+            const files = document.getElementById('ats-file').files;
 
-            if (!resume || !jobDesc) {
-                resultDiv.innerHTML = `<p class="error">Please provide both resume and job description.</p>`;
+            if (files.length < 1) {
+                resultDiv.innerHTML = `<p class="error">Please upload at least one file (resume). Both resume and job description are recommended.</p>`;
                 return;
             }
 
             try {
+                let resumeText = '';
+                let jobDescText = '';
+
+                // Read first file (resume)
+                await new Promise((resolve) => {
+                    readFile(files[0], function(text) {
+                        resumeText = text;
+                        resolve();
+                    });
+                });
+
+                // Read second file (job description) if provided
+                if (files.length > 1) {
+                    await new Promise((resolve) => {
+                        readFile(files[1], function(text) {
+                            jobDescText = text;
+                            resolve();
+                        });
+                    });
+                }
+
                 const response = await fetch('/check-ats-score', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ 'resume': resume, 'job_desc': jobDesc })
+                    body: new URLSearchParams({ 'resume': resumeText, 'job_desc': jobDescText })
                 });
                 const data = await response.json();
                 if (data.error) {
