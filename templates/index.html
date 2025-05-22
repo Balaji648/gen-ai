@@ -5,61 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GEN IQ</title>
     <style>
-        body {
+        :root {
+            --primary-color: #0F52BA;
+            --secondary-color: #2ECC71;
+            --accent-color: #FFD700;
+            --bg-dark: #1F2525;
+            --bg-light: #0A1D37;
+            --text-light: #D3D3D3;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1F2525, #0A1D37);
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark), var(--bg-light));
             color: #ffffff;
-            position: relative;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+            line-height: 1.6;
         }
+
+        /* Header Styles */
+        header {
+            background: rgba(20, 20, 30, 0.95);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--accent-color), #C0C0C0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--accent-color);
+        }
+
         #app {
             position: relative;
             z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
         }
+
         input, textarea, select {
             background-color: rgba(50, 50, 50, 0.9);
             color: #ffffff;
-            border: 1px solid #ffffff;
+            border: 1px solid var(--text-light);
             border-radius: 8px;
-            padding: 8px;
-            margin: 10px 0;
-            width: 90%;
-            max-width: 400px;
-            box-sizing: border-box;
+            padding: 12px;
+            margin: 12px 0;
+            width: 100%;
+            max-width: 500px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
         }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+
         button {
-            background: linear-gradient(45deg, #0F52BA, #2ECC71);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: #ffffff;
             border-radius: 12px;
             border: none;
             box-shadow: 0 0 15px rgba(46, 204, 113, 0.7);
-            display: block;
-            margin: 10px auto;
             padding: 12px 24px;
             font-size: 1.1rem;
             font-weight: bold;
-            width: 90%;
+            width: 100%;
             max-width: 200px;
             text-align: center;
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
         }
+
         button:hover {
-            transform: scale(1.1);
+            transform: translateY(-3px);
             box-shadow: 0 0 25px rgba(15, 82, 186, 0.9);
         }
+
         button:disabled {
             background: linear-gradient(45deg, #666666, #999999);
             box-shadow: none;
             cursor: not-allowed;
         }
+
         h2, h3 {
-            color: #D3D3D3;
+            color: var(--text-light);
             text-align: center;
+            margin-bottom: 1.5rem;
         }
+
         .background-particles {
             position: absolute;
             width: 100%;
@@ -69,6 +142,7 @@
             pointer-events: none;
             z-index: 0;
         }
+
         .particle {
             position: absolute;
             background: radial-gradient(circle, rgba(255, 215, 0, 0.8), transparent);
@@ -78,11 +152,13 @@
             animation: float 8s infinite ease-in-out;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
+
         @keyframes float {
             0% { transform: translateY(100vh) scale(0.5); opacity: 0.8; }
             50% { opacity: 1; }
             100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
         }
+
         .particle:nth-child(1) { left: 5%; animation-duration: 10s; animation-delay: 0s; }
         .particle:nth-child(2) { left: 15%; animation-duration: 12s; animation-delay: 1s; }
         .particle:nth-child(3) { left: 25%; animation-duration: 9s; animation-delay: 2s; }
@@ -93,105 +169,219 @@
         .particle:nth-child(8) { left: 75%; animation-duration: 8s; animation-delay: 3.5s; }
         .particle:nth-child(9) { left: 85%; animation-duration: 12s; animation-delay: 4s; }
         .particle:nth-child(10) { left: 95%; animation-duration: 11s; animation-delay: 0.2s; }
+
         .unique-title {
-            font-size: 7rem;
+            font-size: 6rem;
             font-weight: 900;
             text-align: center;
-            background: linear-gradient(45deg, #FFD700, #C0C0C0, #FFD700);
+            background: linear-gradient(45deg, var(--accent-color), #C0C0C0, var(--accent-color));
             background-size: 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px #FFD700, 0 0 30px #C0C0C0;
-            margin: 30px 0;
+            text-shadow: 0 0 20px var(--accent-color), 0 0 30px #C0C0C0;
+            margin: 2rem 0;
             animation: neon-glow 4s ease-in-out infinite;
         }
+
         @keyframes neon-glow {
-            0% { background-position: 0%; text-shadow: 0 0 20px #FFD700, 0 0 30px #C0C0C0; }
-            50% { background-position: 100%; text-shadow: 0 0 30px #FFD700, 0 0 40px #C0C0C0; }
-            100% { background-position: 0%; text-shadow: 0 0 20px #FFD700, 0 0 30px #C0C0C0; }
+            0% { background-position: 0%; text-shadow: 0 0 20px var(--accent-color), 0 0 30px #C0C0C0; }
+            50% { background-position: 100%; text-shadow: 0 0 30px var(--accent-color), 0 0 40px #C0C0C0; }
+            100% { background-position: 0%; text-shadow: 0 0 20px var(--accent-color), 0 0 30px #C0C0C0; }
         }
+
         .tool-card-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            width: 90%;
-            max-width: 1300px;
-            margin: 30px auto;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            margin: 2rem auto;
             perspective: 1000px;
         }
+
         .tool-card {
             background: rgba(20, 20, 30, 0.95);
             color: #ffffff;
-            padding: 25px;
+            padding: 2rem;
             border: 2px solid transparent;
             border-radius: 15px;
             text-align: center;
             transition: transform 0.4s, box-shadow 0.4s, border 0.4s;
-            min-height: 200px;
+            min-height: 220px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 0 15px rgba(15, 82, 186, 0.5);
             transform: rotateY(0deg);
         }
+
         .tool-card:hover {
             transform: rotateY(5deg) translateY(-10px);
             box-shadow: 0 0 30px rgba(46, 204, 113, 0.7);
-            border: 2px solid #0F52BA;
+            border: 2px solid var(--primary-color);
         }
+
         .tool-card h3 {
-            margin: 15px 0;
-            font-size: 1.7rem;
-            color: #D3D3D3;
-            text-shadow: 0 0 5px #D3D3D3;
+            margin: 1rem 0;
+            font-size: 1.8rem;
+            color: var(--text-light);
+            text-shadow: 0 0 5px var(--text-light);
         }
+
         .tool-card p {
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: #e0e0e0;
-            margin-bottom: 25px;
+            margin-bottom: 1.5rem;
         }
+
         .tool-card .button-container {
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
         }
+
         .back-button-container {
-            margin: 20px 0;
+            margin: 1.5rem 0;
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
         }
+
         .tool-section {
             display: none;
-            padding: 20px;
+            padding: 2rem;
             text-align: center;
+            background: rgba(20, 20, 30, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         }
+
         #home {
             display: block;
         }
+
         .error, .success {
             color: #ff0000;
-            margin: 10px 0;
+            margin: 1rem 0;
+            font-size: 1.1rem;
         }
+
         .success {
             color: #00ff00;
         }
-        @media (max-width: 600px) {
+
+        /* File Upload Styles */
+        .file-upload-container {
+            margin: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .file-upload-container label {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            color: var(--text-light);
+        }
+
+        input[type="file"] {
+            background: none;
+            border: none;
+            color: var(--text-light);
+        }
+
+        input[type="file"]::-webkit-file-upload-button {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        input[type="file"]::-webkit-file-upload-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Footer Styles */
+        footer {
+            background: rgba(20, 20, 30, 0.95);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-light);
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links a {
+            color: var(--accent-color);
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
             .unique-title {
-                font-size: 4.5rem;
+                font-size: 4rem;
             }
+
             .tool-card-container {
                 grid-template-columns: 1fr;
             }
+
             button {
-                width: 95%;
+                max-width: 100%;
+            }
+
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .unique-title {
+                font-size: 3rem;
+            }
+
+            .tool-card {
+                padding: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
+    <header>
+        <div class="header-container">
+            <div class="logo">GEN IQ</div>
+            <nav>
+                <ul>
+                    <li><a href="#" onclick="navigate('home')">Home</a></li>
+                    <li><a href="#" onclick="navigate('text-to-image')">Text-to-Image</a></li>
+                    <li><a href="#" onclick="navigate('text-to-audio')">Text-to-Audio</a></li>
+                    <li><a href="#" onclick="navigate('summarization')">Summarization</a></li>
+                    <li><a href="#" onclick="navigate('code-debugger')">Code Debugger</a></li>
+                    <li><a href="#" onclick="navigate('ats-score-checker')">ATS Checker</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
     <div id="app">
         <!-- Homepage -->
         <div id="home" class="section">
@@ -304,12 +494,31 @@
                 <button onclick="navigate('home')">Back to Tools</button>
             </div>
             <h2>ATS Score Checker</h2>
-            <textarea id="ats-resume" placeholder="Paste your resume text here..." rows="10"></textarea>
-            <textarea id="ats-job-desc" placeholder="Enter job description here..." rows="10"></textarea>
+            <div class="file-upload-container">
+                <label for="ats-resume-file">Upload Resume (PDF or Text):</label>
+                <input type="file" id="ats-resume-file" accept=".pdf,.txt">
+            </div>
+            <textarea id="ats-resume" placeholder="Or paste your resume text here..." rows="10"></textarea>
+            <div class="file-upload-container">
+                <label for="ats-job-desc-file">Upload Job Description (PDF or Text):</label>
+                <input type="file" id="ats-job-desc-file" accept=".pdf,.txt">
+            </div>
+            <textarea id="ats-job-desc" placeholder="Or enter job description here..." rows="10"></textarea>
             <button onclick="checkATSScore()">Check Score</button>
             <div id="ats-result"></div>
         </div>
     </div>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 GEN IQ. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+            </div>
+        </div>
+    </footer>
 
     <script>
         // Navigation between sections
@@ -318,6 +527,7 @@
                 section.style.display = 'none';
             });
             document.getElementById(sectionId).style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // Single-click enforcement
@@ -328,6 +538,35 @@
                     button.disabled = false;
                 }, 1000);
             });
+        });
+
+        // File reading for ATS Score Checker
+        function readFile(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                callback(e.target.result);
+            };
+            reader.onerror = function(e) {
+                document.getElementById('ats-result').innerHTML = `<p class="error">Error reading file: ${e.target.error.message}</p>`;
+            };
+            reader.readAsText(file);
+        }
+
+        // Handle file uploads for ATS
+        document.getElementById('ats-resume-file').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                readFile(e.target.files[0], function(text) {
+                    document.getElementById('ats-resume').value = text;
+                });
+            }
+        });
+
+        document.getElementById('ats-job-desc-file').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                readFile(e.target.files[0], function(text) {
+                    document.getElementById('ats-job-desc').value = text;
+                });
+            }
         });
 
         // Text-to-Image
@@ -343,7 +582,7 @@
                 });
                 const data = await response.json();
                 if (data.image) {
-                    resultDiv.innerHTML = `<img src="${data.image}" alt="Generated Image" style="max-width: 100%;">`;
+                    resultDiv.innerHTML = `<img src="${data.image}" alt="Generated Image" style="max-width: 100%; border-radius: 10px;">`;
                 } else {
                     resultDiv.innerHTML = `<p class="error">${data.error}</p>`;
                 }
@@ -420,6 +659,11 @@
             const resume = document.getElementById('ats-resume').value;
             const jobDesc = document.getElementById('ats-job-desc').value;
             const resultDiv = document.getElementById('ats-result');
+
+            if (!resume || !jobDesc) {
+                resultDiv.innerHTML = `<p class="error">Please provide both resume and job description.</p>`;
+                return;
+            }
 
             try {
                 const response = await fetch('/check-ats-score', {
